@@ -2,7 +2,7 @@
 session_start();
 require_once "../secret_key.php";
 require_once "bridge_parameters.php";
-assert(is_dir(PRESTASHOP_RELATIVE_PATH));
+assert(is_dir(PRESTASHOP_RELATIVE_PATH), "Problem of directory...");
 require PRESTASHOP_RELATIVE_PATH . 'vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
@@ -39,13 +39,13 @@ if (isset($_SESSION["user_mail"])) {
         );
 
         if (!$authentication || !$customer->id) {
-            $customer->firstname = trim($firstname);
-            $customer->lastname = trim($lastname);
-            $customer->passwd = md5(pSQL(_COOKIE_KEY_ . generateRandomString(25)));
+            $customer->firstname = empty(trim($firstname)) ? "Inconnu" : trim($firstname);
+            $customer->lastname = empty(trim($lastname)) ? "Inconnu" : trim($lastname);
+            $customer->passwd = md5(pSQL(_COOKIE_KEY_ . generateRandomString(15)));
             $customer->email = strtolower(trim($email));
             $customer->is_guest = 0;
             $customer->active = 1;
-            $customer->add();
+            $add_action = $customer->add();
             $authentication = $customer->getByEmail(
                 $email
             );
@@ -86,9 +86,9 @@ if (isset($_SESSION["user_mail"])) {
             $ctx->cart->autosetProductAddress();
 
             $ctx->cookie->registerSession(new CustomerSession());
-
             return true;
         }
+        return false;
     }
 
     function decipher_text($ciphertext)
