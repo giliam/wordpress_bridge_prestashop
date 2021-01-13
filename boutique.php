@@ -4,7 +4,6 @@ require_once "../secret_key.php";
 function get_current_user_wordpress()
 {
     require 'wp-load.php';
-    $current_user = wp_get_current_user();
     return wp_get_current_user();
 }
 
